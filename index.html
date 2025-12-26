@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>슈비봇 | RPG & 경제 디스코드 봇</title>
+  <meta name="description" content="광산·낚시·강화·던전·레이드·상점·쿠폰까지. 슈비봇 기능 소개 페이지" />
+  <style>
+    :root{
+      --bg:#0b0b0f;
+      --panel:#12121a;
+      --panel2:#0f0f16;
+      --text:#f5f5f7;
+      --muted:#b9b9c3;
+      --line:rgba(255,255,255,.08);
+      --accent:#7c5cff;
+      --accent2:#2ee59d;
+      --warn:#ffcc66;
+      --radius:16px;
+      --shadow: 0 18px 50px rgba(0,0,0,.45);
+      --max: 1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, "Apple SD Gothic Neo", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(800px 400px at 20% 10%, rgba(124,92,255,.18), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(46,229,157,.12), transparent 60%),
+        radial-gradient(700px 380px at 40% 90%, rgba(255,204,102,.10), transparent 60%),
+        var(--bg);
+      line-height:1.55;
+    }
+    a{color:inherit}
+    .wrap{max-width:var(--max); margin:0 auto; padding:24px}
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px; border:1px solid var(--line);
+      border-radius:var(--radius); background:rgba(18,18,26,.55);
+      backdrop-filter: blur(10px);
+      position:sticky; top:14px; z-index:10;
+    }
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{
+      width:38px; height:38px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(124,92,255,.9), rgba(46,229,157,.8));
+      box-shadow: 0 10px 25px rgba(124,92,255,.18);
+    }
+    .brand b{font-size:15px; letter-spacing:.2px}
+    .brand small{display:block; color:var(--muted); margin-top:2px; font-size:12px}
+    .nav .links{display:flex; gap:14px; flex-wrap:wrap; justify-content:flex-end}
+    .nav .links a{
+      text-decoration:none; color:var(--muted);
+      padding:8px 10px; border-radius:12px;
+      border:1px solid transparent;
+    }
+    .nav .links a:hover{color:var(--text); border-color:var(--line); background:rgba(255,255,255,.03)}
+    .btns{display:flex; gap:10px; flex-wrap:wrap}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:8px;
+      padding:10px 14px; border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text); text-decoration:none;
+      transition: transform .08s ease, background .15s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{background:rgba(255,255,255,.06)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{
+      border-color: rgba(124,92,255,.45);
+      background: linear-gradient(135deg, rgba(124,92,255,.35), rgba(46,229,157,.18));
+    }
+    .hero{
+      padding:48px 0 26px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:22px;
+      align-items:stretch;
+    }
+    @media (max-width: 900px){
+      .hero{grid-template-columns:1fr; padding-top:28px}
+    }
+    .headline{
+      border:1px solid var(--line);
+      border-radius:calc(var(--radius) + 6px);
+      background: rgba(18,18,26,.52);
+      box-shadow: var(--shadow);
+      padding:26px;
+    }
+    .kicker{
+      display:inline-flex; gap:8px; align-items:center;
+      font-size:12px; color:var(--muted);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:7px 10px;
+      background: rgba(255,255,255,.03);
+    }
+    .dot{width:7px; height:7px; border-radius:999px; background: var(--accent2); box-shadow: 0 0 0 5px rgba(46,229,157,.12)}
+    h1{margin:14px 0 10px; font-size:40px; line-height:1.12}
+    @media (max-width: 520px){h1{font-size:32px}}
+    .sub{color:var(--muted); font-size:15px; margin:0 0 18px}
+    .pillrow{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 20px}
+    .pill{
+      font-size:12px; color:var(--muted);
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      padding:7px 10px; border-radius:999px;
+    }
+    .heroCard{
+      border:1px solid var(--line);
+      border-radius:calc(var(--radius) + 6px);
+      background: linear-gradient(180deg, rgba(18,18,26,.58), rgba(15,15,22,.48));
+      padding:22px;
+      display:flex; flex-direction:column; gap:12px;
+      box-shadow: var(--shadow);
+    }
+    .statGrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .stat{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background: rgba(255,255,255,.03);
+    }
+    .stat b{display:block; font-size:14px}
+    .stat span{color:var(--muted); font-size:12px}
+    .section{padding:18px 0}
+    .section h2{font-size:22px; margin:0 0 12px}
+    .section p{color:var(--muted); margin:0 0 14px}
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+    @media (max-width: 900px){ .grid{grid-template-columns:1fr 1fr} }
+    @media (max-width: 600px){ .grid{grid-template-columns:1fr} }
+    .card{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:16px;
+      background: rgba(255,255,255,.03);
+      transition: transform .10s ease, background .15s ease;
+      min-height: 130px;
+    }
+    .card:hover{background:rgba(255,255,255,.045); transform: translateY(-1px)}
+    .card .top{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px
+    }
+    .badge{
+      font-size:11px; color:rgba(255,255,255,.82);
+      padding:6px 10px; border-radius:999px;
+      background: rgba(124,92,255,.18);
+      border: 1px solid rgba(124,92,255,.35);
+    }
+    .icon{
+      width:34px; height:34px; border-radius:12px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px;
+    }
+    .card h3{margin:0 0 6px; font-size:16px}
+    .card p{margin:0; color:var(--muted); font-size:13px}
+    .twoCol{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 900px){ .twoCol{grid-template-columns:1fr} }
+    .panel{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(18,18,26,.42);
+      padding:16px;
+    }
+    .cmd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:12.5px;
+      color: rgba(255,255,255,.88);
+      background: rgba(0,0,0,.35);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      overflow:auto;
+      white-space:pre;
+    }
+    .faq details{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.03);
+      padding:12px 14px;
+      margin-bottom:10px;
+    }
+    .faq summary{
+      cursor:pointer;
+      font-weight:650;
+      outline:none;
+    }
+    .faq p{margin:10px 0 0; color:var(--muted)}
+    footer{
+      padding:26px 0 40px;
+      color:var(--muted);
+      text-align:center;
+      border-top:1px solid var(--line);
+      margin-top:18px;
+    }
+    .muted{color:var(--muted)}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <b>슈비봇</b>
+          <small>Discord RPG · 경제 · 미니게임</small>
+        </div>
+      </div>
+
+      <div class="links">
+        <a href="#features">기능</a>
+        <a href="#commands">명령어</a>
+        <a href="#systems">시스템</a>
+        <a href="#faq">FAQ</a>
+      </div>
+
+      <div class="btns">
+        <!-- ✅ 실제 링크로 교체 -->
+        <a class="btn primary" href="https://discord.com/oauth2/authorize?client_id=1433787948708528168&permissions=8&integration_type=0&scope=bot+applications.commands" target="_blank" rel="noopener noreferrer">➕ 봇 초대</a>
+        <a class="btn" href="https://discord.com/invite/QrezHyvrGz" target="_blank" rel="noopener noreferrer">💬 서포트</a>
+      </div>
+    </div>
+
+    <section class="hero" id="top">
+      <div class="headline">
+        <div class="kicker"><span class="dot"></span> 서버에서 바로 즐기는 RPG & 경제 컨텐츠</div>
+        <h1>광산 · 낚시 · 강화 · 던전 · 레이드<br/>“슈비봇”으로 한 번에</h1>
+        <p class="sub">
+          명령어만으로 돈을 모으고, 장비를 강화하고, 보스를 잡고, 아이템을 사고파는
+          <span class="muted">올인원 RPG 디스코드 봇</span>.
+        </p>
+
+        <div class="pillrow">
+          <div class="pill">⛏️ 광산 레벨/XP</div>
+          <div class="pill">🎣 낚시 레벨/XP</div>
+          <div class="pill">⚒️ 무기·방어구 강화</div>
+          <div class="pill">⚔️ 던전/레이드</div>
+          <div class="pill">🎁 상점/쿠폰</div>
+          <div class="pill">🧪 회복/내구도</div>
+        </div>
+
+        <div class="btns">
+          <a class="btn primary" href="#features">기능 보러가기 →</a>
+          <a class="btn" href="#commands">명령어 보기</a>
+        </div>
+      </div>
+
+      <aside class="heroCard">
+        <h2 style="margin:0; font-size:18px;">한 눈에 보는 핵심</h2>
+        <div class="statGrid">
+          <div class="stat">
+            <b>경제</b>
+            <span>잔액/송금/상점/판매</span>
+          </div>
+          <div class="stat">
+            <b>성장</b>
+            <span>광산/낚시 레벨</span>
+          </div>
+          <div class="stat">
+            <b>컨텐츠</b>
+            <span>광산/낚시/전투</span>
+          </div>
+          <div class="stat">
+            <b>확률</b>
+            <span>광산/낚시/보상상자</span>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+
+    <section class="section" id="features">
+      <h2>기능</h2>
+      <p>서버가 심심할 틈이 없게 만드는 핵심 컨텐츠들.</p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="top">
+            <div class="icon">⛏️</div>
+            <div class="badge">파밍</div>
+          </div>
+          <h3>광산</h3>
+          <p>지갑을 채우는덴 이것만한게 없죠</p>
+        </div>
+
+        <div class="card">
+          <div class="top">
+            <div class="icon">🎣</div>
+            <div class="badge">수집</div>
+          </div>
+          <h3>낚시</h3>
+          <p>배고픔을 달래기위한 선택입니다.</p>
+        </div>
+
+        <div class="card">
+          <div class="top">
+            <div class="icon">🎣</div>
+            <div class="badge">던전</div>
+          </div>
+          <h3>던전</h3>
+          <p>위험에 직접 달려듭니다.</p>
+        </div>
+
+        <div class="card">
+          <div class="top">
+            <div class="icon">🎣</div>
+            <div class="badge">확률</div>
+          </div>
+          <h3>강화</h3>
+          <p>모험을 위한 필수적인 준비입니다.</p>
+        </div>
+
+        <div class="card">
+          <div class="top">
+            <div class="icon">🎁</div>
+            <div class="badge">확률</div>
+          </div>
+          <h3>오늘의 보상상자</h3>
+          <p>랜덤 보상이 확률로 지급됩니다.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="section" id="systems">
+      <h2>확률 & 성장 시스템</h2>
+      <p>광산/낚시/보상상자 확률과 레벨업 정보를 한눈에.</p>
+
+      <div class="twoCol" style="margin-top:12px">
+        <!-- 광산 -->
+        <div class="panel">
+          <div style="font-weight:650; margin-bottom:8px">광산 확률 · 레벨업 XP</div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:10px">
+            <span class="muted" style="font-size:13px">레벨 선택</span>
+            <select id="mineLevelSelect"
+              style="
+                background: rgba(0,0,0,.35);
+                color: rgba(255,255,255,.92);
+                border:1px solid var(--line);
+                border-radius:12px;
+                padding:10px 12px;
+                outline:none;
+              ">
+              <option value="1">Lv.1</option>
+              <option value="2">Lv.2</option>
+              <option value="3">Lv.3</option>
+              <option value="4">Lv.4</option>
+              <option value="5">Lv.5</option>
+            </select>
+
+            <span class="pill" id="mineXpNeedPill">다음 레벨업 필요 XP: -</span>
+          </div>
+
+          <div class="cmd" id="mineProbSingle">계산중...</div>
+
+          <p class="muted" style="font-size:13px; margin:10px 0 0">
+            드랍은 <b>가중치 기반</b>이며, 레벨이 오르면 gold/diamond/mithril 가중치에 배수가 적용됩니다.
+          </p>
+
+          <div style="margin-top:12px; font-weight:650">광산 레벨업 필요 XP (다음 레벨까지)</div>
+          <div class="cmd" id="mineLevelXpTable">계산중...</div>
+        </div>
+
+        <!-- 낚시 -->
+        <div class="panel">
+          <div style="font-weight:650; margin-bottom:8px">낚시 확률 · 레벨 설명</div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:10px">
+            <span class="muted" style="font-size:13px">레벨 선택</span>
+            <select id="fishLevelSelect"
+              style="
+                background: rgba(0,0,0,.35);
+                color: rgba(255,255,255,.92);
+                border:1px solid var(--line);
+                border-radius:12px;
+                padding:10px 12px;
+                outline:none;
+              ">
+              <option value="1">Lv.1</option>
+              <option value="2">Lv.2</option>
+              <option value="3">Lv.3</option>
+              <option value="4">Lv.4</option>
+              <option value="5">Lv.5</option>
+            </select>
+
+            <span class="pill" id="fishXpNeedPill">다음 레벨업 필요 XP: -</span>
+          </div>
+
+          <div class="cmd" id="fishProbSingle">설명/확률표 로딩중...</div>
+
+          <p class="muted" style="font-size:13px; margin:10px 0 0">
+            낚시 레벨은 <b>희귀(에픽/레전더리)</b> 출현 확률 보정을 올려줍니다.
+          </p>
+
+          <div style="margin-top:12px; font-weight:650">낚시 레벨업 필요 XP (다음 레벨까지)</div>
+          <div class="cmd" id="fishLevelXpTable">로딩중...</div>
+        </div>
+      </div>
+
+      <!-- 시세 -->
+      <div class="panel" style="margin-top:12px">
+        <div style="font-weight:650; margin-bottom:8px">광물 시세 시스템</div>
+        <div class="cmd" id="orePriceInfo">로딩중...</div>
+        <p class="muted" style="font-size:13px; margin:10px 0 0">
+          시세는 <b>1분 단위</b>로 갱신됩니다.
+        </p>
+      </div>
+
+      <!-- 오늘의 보상상자 -->
+      <div class="panel" style="margin-top:12px">
+        <div style="font-weight:650; margin-bottom:8px">오늘의 보상상자 드랍 확률</div>
+        <div class="cmd" id="dailyChestInfo">로딩중...</div>
+      </div>
+
+    </section>
+
+
+    <footer>
+      <div>© <span id="y"></span> 슈비봇</div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // ─────────────────────────────────────────
+    // [광산] services/miningService.js 기준
+    // ─────────────────────────────────────────
+    const BASE_TABLE = [
+      { ore: 'iron', w: 85 },
+      { ore: 'gold', w: 12 },
+      { ore: 'diamond', w: 2.75 },
+      { ore: 'mithril', w: 0.25 },
+    ];
+
+    const LEVEL_MULT_MINE = {
+      1: { gold: 1.0, diamond: 1.0, mithril: 1.0 },
+      2: { gold: 1.1, diamond: 1.3, mithril: 1.5 },
+      3: { gold: 1.2, diamond: 1.6, mithril: 2.2 },
+      4: { gold: 1.3, diamond: 2.2, mithril: 3.0 },
+      5: { gold: 1.5, diamond: 3.0, mithril: 5.0 },
+    };
+
+    const LEVEL_XP_MINE = {
+      1: 500,
+      2: 2000,
+      3: 7000,
+      4: 20000,
+    };
+
+    function calcMineWeights(level) {
+      const L = Math.max(1, Math.min(5, Number(level) || 1));
+      const mult = LEVEL_MULT_MINE[L] || LEVEL_MULT_MINE[1];
+      return BASE_TABLE.map(t => {
+        let w = t.w;
+        if (t.ore === 'gold') w *= mult.gold;
+        if (t.ore === 'diamond') w *= mult.diamond;
+        if (t.ore === 'mithril') w *= mult.mithril;
+        return { ore: t.ore, w };
+      });
+    }
+
+    function minePercent(level) {
+      const table = calcMineWeights(level);
+      const sum = table.reduce((a, b) => a + b.w, 0);
+      const pct = {};
+      for (const t of table) pct[t.ore] = (t.w / sum) * 100;
+      return { pct, sumW: sum, table };
+    }
+
+    function fmtPct(n) { return (Math.round(n * 100) / 100).toFixed(2) + '%'; }
+    function fmtNum(n) { return Number(n || 0).toLocaleString('ko-KR'); }
+
+    function renderMine(level) {
+      const L = Math.max(1, Math.min(5, Number(level) || 1));
+      const { pct, table } = minePercent(L);
+      const w = Object.fromEntries(table.map(t => [t.ore, t.w]));
+
+      const lines = [];
+      lines.push(`Lv.${L} 드랍 확률`);
+      lines.push(`  철    ${fmtPct(pct.iron)}   (w=${w.iron.toFixed(2)})`);
+      lines.push(`  금    ${fmtPct(pct.gold)}   (w=${w.gold.toFixed(2)})`);
+      lines.push(`  다이아 ${fmtPct(pct.diamond)}   (w=${w.diamond.toFixed(2)})`);
+      lines.push(`  미스릴 ${fmtPct(pct.mithril)}   (w=${w.mithril.toFixed(2)})`);
+      lines.push('');
+      lines.push(`레벨 배수: 금×${LEVEL_MULT_MINE[L].gold}, 다이아×${LEVEL_MULT_MINE[L].diamond}, 미스릴×${LEVEL_MULT_MINE[L].mithril}`);
+
+      document.getElementById('mineProbSingle').textContent = lines.join('\n');
+
+      const need = LEVEL_XP_MINE[L] ?? null;
+      const pill = document.getElementById('mineXpNeedPill');
+      pill.textContent = (need == null)
+        ? '다음 레벨업 필요 XP: MAX'
+        : `다음 레벨업 필요 XP: ${fmtNum(need)} (Lv.${L} → Lv.${L+1})`;
+    }
+
+    function renderMineXpTable() {
+      const el = document.getElementById('mineLevelXpTable');
+      const lines = [];
+      lines.push('레벨업 필요 XP (다음 레벨까지)');
+      for (let lv = 1; lv <= 5; lv++) {
+        const need = LEVEL_XP_MINE[lv];
+        if (need == null) lines.push(`  Lv.${lv} → MAX`);
+        else lines.push(`  Lv.${lv} → Lv.${lv+1} : ${fmtNum(need)} XP`);
+      }
+      el.textContent = lines.join('\n');
+    }
+
+    // ─────────────────────────────────────────
+    // [낚시] services/fishing.json(제공 코드) 기준
+    // ─────────────────────────────────────────
+    const LEVEL_XP_FISH = {
+      1: 3000,
+      2: 12000,
+      3: 40000,
+      4: 120000,
+    };
+
+    const LEVEL_MULT_FISH = {
+      1: { epic: 1,   legendary: 1 },
+      2: { epic: 1.2, legendary: 1.5 },
+      3: { epic: 1.5, legendary: 2.2 },
+      4: { epic: 2.0, legendary: 3.0 },
+      5: { epic: 3.0, legendary: 5.0 },
+    };
+
+    const XP_BY_RARITY = {
+      '커먼': 1,
+      '레어': 3,
+      '에픽': 6,
+      '레전더리': 15,
+    };
+
+    function renderFish(level) {
+      const L = Math.max(1, Math.min(5, Number(level) || 1));
+      const mult = LEVEL_MULT_FISH[L] || LEVEL_MULT_FISH[1];
+
+      const lines = [];
+      lines.push(`Lv.${L} 낚시 희귀 보정`);
+      lines.push(`  에픽       ×${mult.epic}`);
+      lines.push(`  레전더리 ×${mult.legendary}`);
+      lines.push('');
+      lines.push('설명');
+      lines.push('  - 낚시 레벨이 오르면 에픽/레전더리 "가중치"에 배수가 적용됩니다.');
+      lines.push('  - 커먼/레어는 보정 대상이 아닙니다.');
+      lines.push('');
+
+      document.getElementById('fishProbSingle').textContent = lines.join('\n');
+
+      const need = LEVEL_XP_FISH[L] ?? null;
+      const pill = document.getElementById('fishXpNeedPill');
+      pill.textContent = (need == null)
+        ? '다음 레벨업 필요 XP: MAX'
+        : `다음 레벨업 필요 XP: ${fmtNum(need)} (Lv.${L} → Lv.${L+1})`;
+    }
+
+    function renderFishXpTable() {
+      const el = document.getElementById('fishLevelXpTable');
+      const lines = [];
+      lines.push('레벨업 필요 XP (다음 레벨까지)');
+      for (let lv = 1; lv <= 5; lv++) {
+        const need = LEVEL_XP_FISH[lv];
+        if (need == null) lines.push(`  Lv.${lv} → MAX`);
+        else lines.push(`  Lv.${lv} → Lv.${lv+1} : ${fmtNum(need)} XP`);
+      }
+      el.textContent = lines.join('\n');
+    }
+
+    // ✅ (원본에서 호출하지만 정의가 없어서 렌더가 멈추던 부분) — 그대로 두되 에러만 막음
+    function renderFishXpByRarity() { return; }
+
+    // ─────────────────────────────────────────
+    // [시세] services/priceService.js 기준
+    // ─────────────────────────────────────────
+    const PRICE_BOUNDS = {
+      iron:    { min: 1000,     max: 2000,      minStep: 100,    maxStep: 200 },
+      gold:    { min: 30000,    max: 90000,     minStep: 2000,   maxStep: 8000 },
+      diamond: { min: 300000,   max: 600000,    minStep: 30000,  maxStep: 90000 },
+      mithril: { min: 5000000,  max: 12000000,  minStep: 400000, maxStep: 900000 },
+    };
+
+    function renderOrePriceInfo() {
+      const el = document.getElementById('orePriceInfo');
+      const lines = [];
+      lines.push('광물 시세 (1분 단위 변동)');
+      lines.push('');
+      lines.push('범위(최소~최대)');
+      for (const ore of ['iron', 'gold', 'diamond', 'mithril']) {
+        const b = PRICE_BOUNDS[ore];
+        lines.push(`  ${ore.padEnd(7)} ${fmtNum(b.min)} ~ ${fmtNum(b.max)}`);
+      }
+      lines.push('');
+      lines.push('특징');
+      lines.push('  - 평균회귀: 중앙값에서 멀수록 되돌림이 강해짐');
+      lines.push('  - 구매에는 10% 프리미엄(세금)이 적용됨');
+      el.textContent = lines.join('\n');
+    }
+
+    // ─────────────────────────────────────────
+    // [오늘의 보상상자] itemService.js 분기 기준 (확률만)
+    // ─────────────────────────────────────────
+    function renderDailyChestInfo() {
+      const el = document.getElementById('dailyChestInfo');
+      const lines = [];
+      lines.push('오늘의 보상상자 드랍 확률');
+      lines.push('');
+      lines.push('  30%  💰 돈 3,000,000 ~ 4,999,999원');
+      lines.push('  10%  ⛏️ 철 200개');
+      lines.push('  10%  🪙 금 40개');
+      lines.push('  10%  💎 다이아 5개');
+      lines.push('   5%  🔮 미스릴 1개');
+      lines.push('  10%  🎫 횟수초기화권 1개');
+      lines.push('   5%  📦 빈 상자');
+      lines.push('  10%  ✨ 플레이어 경험치 +500');
+      lines.push('  10%  🎟️ 무료 무기 강화권 x3');
+      lines.push('');
+      lines.push('합계: 100%');
+      el.textContent = lines.join('\n');
+    }
+
+    // ─────────────────────────────────────────
+    // 초기 렌더 + 드롭다운 이벤트
+    // ─────────────────────────────────────────
+    renderMineXpTable();
+    renderOrePriceInfo();
+    renderDailyChestInfo();
+
+    renderFishXpTable();
+    renderFishXpByRarity();
+
+    const mineSel = document.getElementById('mineLevelSelect');
+    renderMine(Number(mineSel?.value || 1));
+    mineSel?.addEventListener('change', () => renderMine(Number(mineSel.value || 1)));
+
+    const fishSel = document.getElementById('fishLevelSelect');
+    renderFish(Number(fishSel?.value || 1));
+    fishSel?.addEventListener('change', () => renderFish(Number(fishSel.value || 1)));
+  </script>
+</body>
+</html>
